@@ -69,5 +69,4 @@ class PersonAdapter(private val context: Context, private val personDatabaseHand
         val ivEdit: ImageView = view.ivEdit
         val ivDelete: ImageView = view.ivDelete
     }
-
 }

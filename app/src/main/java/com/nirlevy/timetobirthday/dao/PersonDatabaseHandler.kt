@@ -40,13 +40,11 @@ class PersonDatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABAS
 
     fun add(person: Person): Long {
         val db = this.writableDatabase
-
         val contentValues = ContentValues()
         contentValues.put(KEY_NAME, person.name)
         contentValues.put(KEY_DAY, person.day)
         contentValues.put(KEY_MONTH, person.month)
         contentValues.put(KEY_GENDER, person.gender.name)
-
         val success = db.insert(TABLE_PERSON, null, contentValues)
 
         db.close()
@@ -70,6 +68,7 @@ class PersonDatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABAS
             } while (cursor.moveToNext())
         }
         cursor.close()
+
         return people
     }
 
@@ -80,21 +79,19 @@ class PersonDatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABAS
         contentValues.put(KEY_DAY, person.day)
         contentValues.put(KEY_MONTH, person.month)
         contentValues.put(KEY_GENDER, person.gender.name)
-
         val success = db.update(TABLE_PERSON, contentValues, "$KEY_ID=${person.id}", null)
-
         db.close()
-        return success
 
+        return success
     }
 
     fun delete(person: Person): Int {
         val db = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(KEY_ID, person.id)
-
         val success = db.delete(TABLE_PERSON, "$KEY_ID=${person.id}", null)
         db.close()
+
         return success
     }
 }

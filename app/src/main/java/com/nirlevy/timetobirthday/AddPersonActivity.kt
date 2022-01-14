@@ -39,7 +39,6 @@ class AddPersonActivity : AppCompatActivity() {
             intent.getIntExtra("day", 1),
             intent.getIntExtra("month", 1),
             intent.getStringExtra("gender")
-
         )
     }
 
