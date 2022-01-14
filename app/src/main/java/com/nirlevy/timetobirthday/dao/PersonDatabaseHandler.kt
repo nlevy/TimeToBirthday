@@ -58,11 +58,11 @@ class PersonDatabaseHandler(context: Context): SQLiteOpenHelper(context, DATABAS
         val cursor = db.rawQuery(selectQuery, null)
         if (cursor.moveToFirst()) {
             do {
-                val person = Person(id = cursor.getInt(cursor.getColumnIndex(KEY_ID)),
-                    name = cursor.getString(cursor.getColumnIndex(KEY_NAME)),
-                    day = cursor.getInt(cursor.getColumnIndex(KEY_DAY)),
-                    month = cursor.getInt(cursor.getColumnIndex(KEY_MONTH)),
-                    gender = Gender.valueOf(cursor.getString(cursor.getColumnIndex(KEY_GENDER))))
+                val person = Person(id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)),
+                    day = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DAY)),
+                    month = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MONTH)),
+                    gender = Gender.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(KEY_GENDER))))
 
                 people.add(person)
             } while (cursor.moveToNext())
