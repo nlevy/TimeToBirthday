@@ -9,7 +9,7 @@ class PersonTest {
 
     @Test
     fun nextBirthday_nextYear() {
-        val now = LocalDateTime.of(LocalDateTime.now().year, 1, 1, 0, 1)
+        val now = LocalDateTime.now()
         val yesterday = now.minusDays(1)
         val person = Person(1, "name", yesterday.dayOfMonth, yesterday.monthValue, Gender.BOY)
 
@@ -20,7 +20,7 @@ class PersonTest {
 
     @Test
     fun nextBirthday_thisYear() {
-        val now = LocalDateTime.of(LocalDateTime.now().year, 1, 1, 0, 1)
+        val now = LocalDateTime.now()
         val tomorrow = now.plusDays(1)
         val person = Person(1, "name", tomorrow.dayOfMonth, tomorrow.monthValue, Gender.BOY)
 
