@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="rtl"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_add_person_activity"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="@string/name"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.75"
+            android:hint="@string/name"
+            android:autofillHints="@string/name"
+            android:inputType="text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="@string/date"
+            android:textSize="18sp" />
+
+        <Spinner
+            android:id="@+id/month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/spinner_style"/>
+        <Spinner
+            android:id="@+id/day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/spinner_style"/>
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/rg_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="20dp"
+        android:orientation="horizontal"
+        android:checkedButton="@id/rb_boy">
+
+        <RadioButton
+            android:id="@+id/rb_boy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/boy"
+            android:textSize="24sp" />
+
+        <RadioButton
+            android:id="@+id/rb_girl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/girl"
+            android:textSize="24sp" />
+
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/butCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/cancelButton"
+            style="?android:borderlessButtonStyle"
+            android:background="@drawable/button_border"
+            android:layout_margin="1dp"/>
+
+        <Button
+            android:id="@+id/butAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/addButton"
+            style="?android:borderlessButtonStyle"
+            android:background="@drawable/button_border"
+            android:layout_margin="1dp"/>
+    </LinearLayout>
+
+</LinearLayout>

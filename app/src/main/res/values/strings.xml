@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">מתי היומולדת</string>
+    <string name="result">עוד %,d %s עד היומולדת של %s</string>
+    <string name="name">שם</string>
+    <string name="date">תאריך יומולדת</string>
+    <string name="peopleTitle">אנשים</string>
+    <string name="dateTemplate">%d/%d</string>
+    <string name="addPerson">הוסף איש</string>
+    <string name="boy">בן</string>
+    <string name="girl">בת</string>
+    <string name="addButton">שמור</string>
+    <string name="cancelButton">ביטול</string>
+    <string name="imageContentDescription">image</string>
+</resources>
