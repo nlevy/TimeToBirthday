@@ -8,18 +8,28 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.nirlevy.timetobirthday.dao.PersonDatabaseHandler
 import com.nirlevy.timetobirthday.data.Gender
 import com.nirlevy.timetobirthday.data.Person
 import com.nirlevy.timetobirthday.data.TimeUnit
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var personDatabaseHandler: PersonDatabaseHandler
-    lateinit var person :Person
-    var timeUnit = TimeUnit.values()[0]
+    private val viewModel = AndroidViewModel(this.application)
+    private var timeUntilBirthday: Long = 0
+    private lateinit var personDatabaseHandler: PersonDatabaseHandler
+    private lateinit var person :Person
+    private var timeUnit = TimeUnit.values()[0]
+
+    private var active = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +46,12 @@ class MainActivity : AppCompatActivity() {
         val people = personDatabaseHandler.getAll()
         initPeople(people)
         person = people[0]
+        startLiveUpdates()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        this.active = false
     }
 
     private fun initTimeUnits() {
@@ -53,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 timeUnit = parent?.selectedItem as TimeUnit
-                calculateBirthday()
+                updateBirthdayFields()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -77,19 +93,43 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 person = parent?.selectedItem as Person
-                calculateBirthday()
+                updateBirthdayFields()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
-    fun calculateBirthday() {
-        val nextBirthday = person.nextBirthday
-        val now = LocalDateTime.now()
-        result.text =
-            getString(R.string.result, now.until(nextBirthday, timeUnit.unit), timeUnit, person)
+    fun updateBirthdayFields() {
+        calculateBirthday()
         main.background = ContextCompat.getDrawable(this, person.gender.color)
+    }
+
+    private fun calculateBirthday() {
+        calculateBirthday(LocalDateTime.now())
+    }
+
+    private fun calculateBirthday(now : LocalDateTime) {
+        println("in calculate")
+        val nextBirthday = person.nextBirthday
+        val until = now.until(nextBirthday, timeUnit.unit)
+        if (until != timeUntilBirthday) {
+            result.text = getString(R.string.result, until, timeUnit, person)
+            timeUntilBirthday = until
+            println("updating")
+        }
+    }
+
+    private fun startLiveUpdates() {
+        active = true
+        flow {
+            while (active) {
+                emit(LocalDateTime.now())
+                delay(1000)
+            }
+        }.onEach {
+            calculateBirthday(it)
+        }.launchIn(viewModel.viewModelScope)
     }
 }
 
