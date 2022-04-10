@@ -10,11 +10,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.nirlevy.timetobirthday.dao.PersonDatabaseHandler
 import com.nirlevy.timetobirthday.data.Person
 import kotlinx.android.synthetic.main.person_row.view.*
 
-class PersonAdapter(private val context: Context, private val personDatabaseHandler: PersonDatabaseHandler, private val items: List<Person>) :
+class PersonAdapter(private val context: Context,
+                    private val deleteListener:(id: Int)->Unit,
+                    private val items: List<Person>) :
     RecyclerView.Adapter<PersonAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -52,8 +53,7 @@ class PersonAdapter(private val context: Context, private val personDatabaseHand
         }
 
         holder.ivDelete.setOnClickListener {
-            personDatabaseHandler.delete(person)
-            (context as PersonListActivity).buildList()
+            deleteListener.invoke(person.id)
         }
     }
 

@@ -6,20 +6,29 @@ import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.nirlevy.timetobirthday.dao.PersonDatabaseHandler
+import androidx.lifecycle.lifecycleScope
+import com.nirlevy.timetobirthday.dao.PersonDao
 import com.nirlevy.timetobirthday.data.Gender
 import com.nirlevy.timetobirthday.data.Person
+import com.nirlevy.timetobirthday.data.PersonTransformer
+import com.nirlevy.timetobirthday.databinding.ActivityAddPersonBinding
 import kotlinx.android.synthetic.main.activity_add_person.*
+import kotlinx.coroutines.launch
 
 class AddPersonActivity : AppCompatActivity() {
 
-    private val personDatabaseHandler: PersonDatabaseHandler = PersonDatabaseHandler(this)
+    private lateinit var binding: ActivityAddPersonBinding
+    private lateinit var personDao: PersonDao
+    private lateinit var transformer: PersonTransformer
     private var newPerson = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_person)
+        binding = ActivityAddPersonBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setSupportActionBar(toolbar_add_person_activity)
+        personDao = (application as TTBApplication).db.personDao()
+        transformer = (application as TTBApplication).transformer
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar_add_person_activity.setNavigationOnClickListener { onBackPressed() }
         initDateSpinners()
@@ -70,15 +79,14 @@ class AddPersonActivity : AppCompatActivity() {
 
     private fun addPerson() {
         val person = extractPerson()
-        person?.let {
-            if (newPerson) {
-                val added = personDatabaseHandler.add(it)
-                if (added > -1) {
+        lifecycleScope.launch {
+            person?.let {
+
+                if (newPerson) {
+                    personDao.insert(transformer.toPersonEntity(person))
                     onBackPressed()
-                }
-            } else {
-                val updated = personDatabaseHandler.update(person)
-                if (updated == 1) {
+                } else {
+                    personDao.update(transformer.toPersonEntity(person))
                     onBackPressed()
                 }
             }

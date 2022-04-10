@@ -9,23 +9,31 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import com.nirlevy.timetobirthday.dao.PersonDatabaseHandler
+import com.nirlevy.timetobirthday.dao.PersonDao
 import com.nirlevy.timetobirthday.data.Gender
 import com.nirlevy.timetobirthday.data.Person
+import com.nirlevy.timetobirthday.data.PersonTransformer
 import com.nirlevy.timetobirthday.data.TimeUnit
+import com.nirlevy.timetobirthday.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
+
     private val viewModel = AndroidViewModel(this.application)
     private var timeUntilBirthday: Long = 0
-    private lateinit var personDatabaseHandler: PersonDatabaseHandler
+    private lateinit var personDao: PersonDao
+    private lateinit var transformer: PersonTransformer
     private lateinit var person :Person
     private var timeUnit = TimeUnit.values()[0]
 
@@ -33,8 +41,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        personDatabaseHandler = PersonDatabaseHandler(this)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+        personDao = (application as TTBApplication).db.personDao()
+        transformer = (application as TTBApplication).transformer
         initTimeUnits()
         settings.setOnClickListener {
             startActivity(Intent(this, PersonListActivity::class.java))
@@ -43,10 +54,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val people = personDatabaseHandler.getAll()
-        initPeople(people)
-        person = people[0]
-        startLiveUpdates()
+        lifecycleScope.launch {
+            personDao.getAll().collect {
+                val people = if (it.isNotEmpty()) {
+                    transformer.toPersonList(it)
+                } else {
+                    listOf(Person(0, "DEMO", 1, 1, Gender.GIRL))
+                }
+                initPeople(people)
+                person = people[0]
+                startLiveUpdates()
+            }
+        }
     }
 
     override fun onPause() {
@@ -76,10 +95,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initPeople(people: ArrayList<Person>) {
-        if (people.isEmpty()) {
-            people.add(Person(0,"DEMO", 1, 1, Gender.GIRL))
-        }
+    private fun initPeople(people: List<Person>) {
         ArrayAdapter(this, android.R.layout.simple_spinner_item, people)
             .also { adapter ->
                 adapter.setDropDownViewResource(R.layout.spinner_item)
